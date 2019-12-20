@@ -8,7 +8,6 @@ C Build environment in a docker container, featuring colored output and compiler
  - `ccache` for fast recompilation
  - `colorgcc` for colored output
  - Support for cross-compiling with external toolchain
- - Very small: 240 MB including the base `ownyourbits/minidebian` ( ~50 MB )
 
 ## Usage
 

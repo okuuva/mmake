@@ -20,10 +20,10 @@
 #
 # Details at ownyourbits.com
 
-FROM ownyourbits/minidebian
+FROM debian:unstable-slim
 
 LABEL description="Make wrapper with GCC 6, colorgcc and ccache"
-MAINTAINER Ignacio Núñez Hernanz <nacho@ownyourbits.com>
+MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
 
 # Install toolchain 
 RUN   apt-get update;\
