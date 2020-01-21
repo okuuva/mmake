@@ -27,10 +27,11 @@ MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
 
 # Install toolchain 
 RUN   apt-get update;\
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo apt-utils;\
       DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc make libc6-dev;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache colorgcc; \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache; \
       dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-      dpkg -L gcc-6    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
+      dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
       apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 # bc to print compilation time
@@ -53,7 +54,6 @@ RUN apt-get update; \
     adduser builder --disabled-password --gecos ""; \
     echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers; \
     sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/builder/.bashrc; \
-    apt-get purge -y adduser passwd; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 RUN echo 'export PATH="/usr/lib/colorgcc/:$PATH"' >> /home/builder/.bashrc; \
