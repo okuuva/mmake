@@ -6,7 +6,6 @@ C Build environment in a docker container, featuring colored output and compiler
 
  - GCC 6
  - `ccache` for fast recompilation
- - `colorgcc` for colored output
  - Support for cross-compiling with external toolchain
 
 ## Usage

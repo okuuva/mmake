@@ -39,14 +39,6 @@ RUN sudo apt-get update; \
     DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends bc; \
     sudo apt-get autoremove -y; sudo apt-get clean; sudo rm /var/lib/apt/lists/* -r; sudo rm -rf /usr/share/man/*
 
-# Set colorgcc and ccache
-COPY colorgccrc /etc/colorgcc/colorgccrc
-
-RUN mkdir  /usr/lib/colorgcc; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/c++; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/cc ; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/gcc; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/g++; 
 
 # Builder user
 RUN apt-get update; \
@@ -56,8 +48,7 @@ RUN apt-get update; \
     sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/builder/.bashrc; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
-RUN echo 'export PATH="/usr/lib/colorgcc/:$PATH"' >> /home/builder/.bashrc; \
-    echo 'export CCACHE_DIR=/src/.ccache'         >> /home/builder/.bashrc; \
+RUN echo 'export CCACHE_DIR=/src/.ccache'         >> /home/builder/.bashrc; \
     echo 'export TERM="xterm"'                    >> /home/builder/.bashrc; 
 
 USER builder
