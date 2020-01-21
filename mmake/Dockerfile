@@ -25,6 +25,9 @@ FROM debian:unstable-slim
 LABEL description="Make wrapper with GCC 6, colorgcc and ccache"
 MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
 
+# Circumvent the `sudo: setrlimit(RLIMIT_CORE): Operation not permitted`
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+
 # Install toolchain 
 RUN   apt-get update;\
       DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo apt-utils;\
@@ -38,7 +41,6 @@ RUN   apt-get update;\
 RUN sudo apt-get update; \
     DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends bc; \
     sudo apt-get autoremove -y; sudo apt-get clean; sudo rm /var/lib/apt/lists/* -r; sudo rm -rf /usr/share/man/*
-
 
 # Builder user
 RUN apt-get update; \
