@@ -28,14 +28,14 @@ MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
 # Circumvent the `sudo: setrlimit(RLIMIT_CORE): Operation not permitted`
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
-# Install toolchain 
-RUN   apt-get update;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo apt-utils;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc make libc6-dev;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache; \
-      dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-      dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-      apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
+# Install toolchain
+RUN apt-get update;\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo apt-utils;\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc make libc6-dev;\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache; \
+    dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
+    dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
+    apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 # bc to print compilation time
 RUN sudo apt-get update; \
@@ -51,7 +51,7 @@ RUN apt-get update; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 RUN echo 'export CCACHE_DIR=/src/.ccache'         >> /home/builder/.bashrc; \
-    echo 'export TERM="xterm"'                    >> /home/builder/.bashrc; 
+    echo 'export TERM="xterm"'                    >> /home/builder/.bashrc;
 
 USER builder
 
