@@ -32,9 +32,12 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 # Install toolchain
 RUN apt-get update;\
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo apt-utils;\
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc make libc6-dev;\
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-utils\
+    ccache\
+    gcc make libc6-dev\
+    sudo\
+    ;\
     dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
     dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
