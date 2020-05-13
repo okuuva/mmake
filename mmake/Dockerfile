@@ -40,7 +40,7 @@ RUN apt-get update;\
     ;\
     dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
     dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-    apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
+    apt-get autoremove -y; apt-get clean -y; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 # bc to print compilation time
 RUN sudo apt-get update; \
