@@ -55,6 +55,9 @@ RUN apt-get update; \
     sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/builder/.bashrc; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
+# Add deb-src to sources.list
+RUN sed -i -E 's/(^deb (.*))/\1\ndeb-src \2/g' /etc/apt/sources.list
+
 # Set locale
 RUN apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends locales; \
