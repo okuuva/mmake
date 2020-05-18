@@ -20,32 +20,32 @@
 #
 # Details at ownyourbits.com
 
-FROM ownyourbits/minidebian
+FROM debian:unstable-slim
 
 LABEL description="Make wrapper with GCC 6, colorgcc and ccache"
-MAINTAINER Ignacio Núñez Hernanz <nacho@ownyourbits.com>
+MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
 
-# Install toolchain 
-RUN   apt-get update;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc make libc6-dev;\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ccache colorgcc; \
-      dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-      dpkg -L gcc-6    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
-      apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
+ARG lang=en_US.UTF-8
+
+# Circumvent the `sudo: setrlimit(RLIMIT_CORE): Operation not permitted`
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+
+# Install toolchain
+RUN apt-get update;\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-utils\
+    ccache\
+    gcc make libc6-dev\
+    sudo\
+    ;\
+    dpkg -L binutils | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
+    dpkg -L gcc-9    | grep -v  "^/usr/bin\|^/usr/lib" | while read f; do test -f $f && rm $f; done; \
+    apt-get autoremove -y; apt-get clean -y; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
 # bc to print compilation time
 RUN sudo apt-get update; \
     DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends bc; \
     sudo apt-get autoremove -y; sudo apt-get clean; sudo rm /var/lib/apt/lists/* -r; sudo rm -rf /usr/share/man/*
-
-# Set colorgcc and ccache
-COPY colorgccrc /etc/colorgcc/colorgccrc
-
-RUN mkdir  /usr/lib/colorgcc; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/c++; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/cc ; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/gcc; \
-    ln -s /usr/bin/colorgcc /usr/lib/colorgcc/g++; 
 
 # Builder user
 RUN apt-get update; \
@@ -53,12 +53,25 @@ RUN apt-get update; \
     adduser builder --disabled-password --gecos ""; \
     echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers; \
     sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/builder/.bashrc; \
-    apt-get purge -y adduser passwd; \
     apt-get autoremove -y; apt-get clean; rm /var/lib/apt/lists/* -r; rm -rf /usr/share/man/*
 
-RUN echo 'export PATH="/usr/lib/colorgcc/:$PATH"' >> /home/builder/.bashrc; \
-    echo 'export CCACHE_DIR=/src/.ccache'         >> /home/builder/.bashrc; \
-    echo 'export TERM="xterm"'                    >> /home/builder/.bashrc; 
+# Add deb-src to sources.list
+RUN sed -i -E 's/(^deb (.*))/\1\ndeb-src \2/g' /etc/apt/sources.list
+
+# Set locale
+RUN apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends locales; \
+    sed -i -e "s/# $lang UTF-8/$lang UTF-8/" /etc/locale.gen && \
+    echo 'LANG="$lang"' > /etc/default/locale && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=$lang
+
+ENV LANG $lang
+ENV LANGUAGE $lang
+ENV LC_ALL $lang
+
+RUN echo 'export CCACHE_DIR=/src/.ccache'         >> /home/builder/.bashrc; \
+    echo 'export TERM="xterm"'                    >> /home/builder/.bashrc;
 
 USER builder
 

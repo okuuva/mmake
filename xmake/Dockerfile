@@ -20,10 +20,13 @@
 #
 # Details at ownyourbits.com
 
-FROM ownyourbits/mmake
+FROM debian:unstable-slim
 
-LABEL description="Make wrapper for crosscompilation, colorgcc and ccache"
-MAINTAINER Ignacio Núñez Hernanz <nacho@ownyourbits.com>
+LABEL description="Make wrapper with GCC 6, colorgcc and ccache"
+MAINTAINER Oula Kuuva <oula.kuuva@iki.fi>
+
+# Circumvent the `sudo: setrlimit(RLIMIT_CORE): Operation not permitted`
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 COPY run.sh /
 
